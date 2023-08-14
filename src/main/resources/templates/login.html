@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <style>
+
+        a {
+            padding: 1rem;
+            background-color: aqua;
+            font-size: large;
+        }
+
+        p {
+            padding: 1rem;
+            background-color: green;
+            font-size: large;
+        }
+
+    </style>
+</head>
+<body>
+
+<div sec:authorize="isAnonymous()">
+    <h3>[로그인 이전]</h3>
+    <a th:href="@{/oauth2/authorization/google}">google login</a>
+</div>
+
+<div sec:authorize="isAuthenticated()">
+    <h3>[로그인 이후]</h3>
+    <p>this user is authenticated</p>
+</div>
+
+</body>
+</html>
