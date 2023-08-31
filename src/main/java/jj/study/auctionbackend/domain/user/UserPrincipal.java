@@ -26,6 +26,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserPrincipal implements OAuth2User, UserDetails, OidcUser {
 
+
     private final String userId;
     private final String password;
     private final ProviderType providerType;

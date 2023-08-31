@@ -23,6 +23,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        log.info("[+] Authentication Filter 에 접근");
+
         // (1)
         String tokenStr = CustomHeaderUtil.getAccessToken(request);
         // (2)

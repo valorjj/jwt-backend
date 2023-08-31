@@ -43,6 +43,7 @@ public class AuthTokenProvider {
      * @return
      */
     public Authentication getAuthentication(AuthToken authToken) {
+        log.info("[+] getAuthentication 접근");
         // (1)
         if (authToken.validate()) {
             // (1-1)
@@ -51,7 +52,7 @@ public class AuthTokenProvider {
             Collection<? extends GrantedAuthority> authorities =
                     Arrays.stream(new String[]{String.valueOf(claims.get(AUTHORITIES_KEY))})
                             .map(SimpleGrantedAuthority::new).toList();
-            log.debug("claims subject := [{}]", claims.getSubject());
+            log.debug("[+] claims subject := [{}]", claims.getSubject());
             // (1-3)
             User principalUser = new User(claims.getSubject(), "", authorities);
             // (1-4)

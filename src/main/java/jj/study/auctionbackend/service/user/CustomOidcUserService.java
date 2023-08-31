@@ -9,6 +9,7 @@ import jj.study.auctionbackend.domain.user.enums.ProviderType;
 import jj.study.auctionbackend.domain.user.enums.RoleType;
 import jj.study.auctionbackend.repository.user.UserJpaRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -23,62 +24,71 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CustomOidcUserService implements OAuth2UserService<OidcUserRequest, OidcUser> {
 
-    private final UserJpaRepository userJpaRepository;
+	private final UserJpaRepository userJpaRepository;
 
-    @Override
-    public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
-        // (1)
-        ClientRegistration clientRegistration = userRequest.getClientRegistration();
-        // (2)
-        OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService = new OidcUserService();
-        OidcUser oidcUser = oidcUserService.loadUser(userRequest);
-        // (3)
-        return this.process(userRequest, oidcUser);
-    }
-    private OidcUser process(OAuth2UserRequest userRequest, OidcUser user) {
-        // (1) Identify an authorization provider
-        ProviderType providerType = ProviderType.valueOf(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
-        // (2)
-        OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.getAttributes());
-        // (3)
-        Optional<User> userOP = userJpaRepository.findByUserId(userInfo.getId());
-        if (userOP.isPresent()) {
-            if (providerType != userOP.get().getProviderType()) {
-                throw new CustomOAuth2Exception("It seems that you are already signup with [" + providerType + "] account. Please try again with your [" + userOP.get().getProviderType() + "]");
-            }
-            updateUser(userOP.get(), userInfo);
-        } else {
-            userOP = Optional.of(createUser(userInfo, providerType));
-        }
+	@Override
+	public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
+		log.info("[+] OidcUserService 접근");
 
-        return UserPrincipal.create(userOP.get(), user.getAttributes());
-    }
+		// (1)
+		ClientRegistration clientRegistration = userRequest.getClientRegistration();
+		// (2)
+		OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService = new OidcUserService();
+		OidcUser oidcUser = oidcUserService.loadUser(userRequest);
+		// (3)
+		return this.process(userRequest, oidcUser);
+	}
 
-    private User createUser(OAuth2UserInfo userInfo, ProviderType providerType) {
-        LocalDateTime now = LocalDateTime.now();
-        User user = User.builder()
-                .userId(userInfo.getId())
-                .username(userInfo.getName())
-                .email(userInfo.getEmail())
-                .emailVerifiedYn("Y")
-                .profileImageUrl(userInfo.getImageUrl())
-                .providerType(providerType)
-                .roleType(RoleType.USER)
-                .build();
+	private OidcUser process(OAuth2UserRequest userRequest, OidcUser user) {
+		// (1) Identify an authorization provider
+		ProviderType providerType = ProviderType.valueOf(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
+		log.debug("[+] providerType := [{}]", providerType.getProviderType());
+		// (2)
+		OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.getAttributes());
+		log.debug("[+] userInfo -> id := [{}]", userInfo.getId());
+		log.debug("[+] userInfo -> email := [{}]", userInfo.getEmail());
+		log.debug("[+] userInfo -> name := [{}]", userInfo.getName());
+		log.debug("[+] userInfo -> attributes := [{}]", userInfo.getAttributes());
+		// (3)
+		Optional<User> userOP = userJpaRepository.findByUserId(userInfo.getId());
+		if (userOP.isPresent()) {
+			if (providerType != userOP.get().getProviderType()) {
+				throw new CustomOAuth2Exception("[+] It seems that you are already signup with [" + providerType + "] account. Please try again with your [" + userOP.get().getProviderType() + "]");
+			}
+			updateUser(userOP.get(), userInfo);
+		} else {
+			userOP = Optional.of(createUser(userInfo, providerType));
+		}
 
-        return userJpaRepository.saveAndFlush(user);
-    }
+		return UserPrincipal.create(userOP.get(), user.getAttributes());
+	}
 
-    private void updateUser(User user, OAuth2UserInfo userInfo) {
-        if (userInfo.getName() != null && !user.getUsername().equals(userInfo.getName())) {
-            user.setUsername(userInfo.getName());
-        }
+	private User createUser(OAuth2UserInfo userInfo, ProviderType providerType) {
+		LocalDateTime now = LocalDateTime.now();
+		User user = User.builder()
+				.userId(userInfo.getId())
+				.username(userInfo.getName())
+				.email(userInfo.getEmail())
+				.emailVerifiedYn("Y")
+				.profileImageUrl(userInfo.getImageUrl())
+				.providerType(providerType)
+				.roleType(RoleType.USER)
+				.build();
 
-        if (userInfo.getImageUrl() != null && !user.getProfileImageUrl().equals(userInfo.getImageUrl())) {
-            user.setProfileImageUrl(userInfo.getImageUrl());
-        }
-    }
+		return userJpaRepository.saveAndFlush(user);
+	}
+
+	private void updateUser(User user, OAuth2UserInfo userInfo) {
+		if (userInfo.getName() != null && !user.getUsername().equals(userInfo.getName())) {
+			user.setUsername(userInfo.getName());
+		}
+
+		if (userInfo.getImageUrl() != null && !user.getProfileImageUrl().equals(userInfo.getImageUrl())) {
+			user.setProfileImageUrl(userInfo.getImageUrl());
+		}
+	}
 
 }

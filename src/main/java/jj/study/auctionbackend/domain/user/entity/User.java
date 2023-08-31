@@ -30,39 +30,39 @@ public class User extends BaseEntity {
     @Size(max = 64)
     private String userId;
 
-    @Column(name = "username", nullable = false, length = 64)
+    @Column(name = "USERNAME", nullable = false, length = 64)
     @NotNull
     @Size(max = 64)
     private String username;
 
     @Email
-    @Column(name = "email", length = 512, unique = true)
+    @Column(name = "EMAIL", length = 512, unique = true)
     @Size(max = 128)
     @NotNull
     private String email;
 
-    @Column(name = "password", length = 64)
+    @Column(name = "PASSWORD", length = 64)
     @NotNull
     @Size(max = 64)
     @JsonIgnore
     private String password;
 
-    @Column(name = "email_verified_yn", length = 1)
+    @Column(name = "EMAIL_VERIFIED_YN", length = 1)
     @Size(min = 1, max = 1)
     @NotNull
     private String emailVerifiedYn;
 
-    @Column(name = "profile_image_url", length = 512)
+    @Column(name = "PROFILE_IMAGE_URL", length = 512)
     @Size(max = 512)
     private String profileImageUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "provider_type", length = 32)
+    @Column(name = "PROVIDER_TYPE", length = 32)
     @NotNull
     private ProviderType providerType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role_type", length = 16)
+    @Column(name = "ROLE_TYPE", length = 16)
     @NotNull
     private RoleType roleType;
 

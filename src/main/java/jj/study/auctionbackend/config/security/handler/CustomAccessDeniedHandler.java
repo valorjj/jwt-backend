@@ -28,6 +28,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
      */
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+        log.info("[+] CustomAccessDeniedHandler 접근");
         // WARN: (1) null 값을 부여하면 일단 패스?
         handlerExceptionResolver.resolveException(request, response, null, accessDeniedException);
     }

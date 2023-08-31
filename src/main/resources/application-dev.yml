@@ -55,20 +55,21 @@ spring:
               - openid
               - profile
               - email
+            redirect-uri: "http://localhost:3000/oauth2/redirected/google"
           ###########################################
           #          REGISTRATION: KEYCLOAK         #
           ###########################################
-          keycloak:
-            authorization-grant-type: authorization_code
-            client-id: ${KC_CLIENT_ID}
-            client-name: ${KC_CLIENT_NAME}
-            client-secret: ${KC_CLIENT_SECRET}
-            redirect-uri: http://localhost:8081/login/oauth2/code/keycloak
-            client-authentication-method: client_secret_basic
-            scope:
-              - openid
-              - profile
-              - email
+#          keycloak:
+#            authorization-grant-type: authorization_code
+#            client-id: ${KC_CLIENT_ID}
+#            client-name: ${KC_CLIENT_NAME}
+#            client-secret: ${KC_CLIENT_SECRET}
+#            redirect-uri: http://localhost:8081/login/oauth2/code/keycloak
+#            client-authentication-method: client_secret_basic
+#            scope:
+#              - openid
+#              - profile
+#              - email
           ###########################################
           #                 NAVER                   #
           ###########################################
@@ -114,13 +115,13 @@ spring:
           ###########################################
           #          PROVIDER: KEYCLOAK             #
           ###########################################
-          keycloak:
-            issuer-uri: http://localhost:8080/realms/oauth2
-            authorization-uri: http://localhost:8080/realms/oauth2/protocol/openid-connect/auth
-            token-uri: http://localhost:8080/realms/oauth2/protocol/openid-connect/token
-            jwk-set-uri: http://localhost:8080/realms/oauth2/protocol/openid-connect/certs
-            user-info-uri: http://localhost:8080/realms/oauth2/protocol/openid-connect/userinfo
-            user-name-attribute: preferred_username
+#          keycloak:
+#            issuer-uri: http://localhost:8080/realms/oauth2
+#            authorization-uri: http://localhost:8080/realms/oauth2/protocol/openid-connect/auth
+#            token-uri: http://localhost:8080/realms/oauth2/protocol/openid-connect/token
+#            jwk-set-uri: http://localhost:8080/realms/oauth2/protocol/openid-connect/certs
+#            user-info-uri: http://localhost:8080/realms/oauth2/protocol/openid-connect/userinfo
+#            user-name-attribute: preferred_username
           
           ###########################################
           #                 NAVER                   #

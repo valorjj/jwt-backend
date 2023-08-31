@@ -73,7 +73,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
                 requests -> requests
                         .requestMatchers(
-                                "/"
+                                mvcPattern.pattern("/"),
+                                mvcPattern.pattern("/login")
                         ).permitAll()
                         .anyRequest().authenticated()
         );
@@ -112,7 +113,7 @@ public class SecurityConfig {
                                                 .baseUri("/*/oauth2/code/*")
                         )
                         // (5-4)
-                        .loginPage("/")
+                        // .loginPage("/login")
                         // (5-5) Register success handler
                         .successHandler(oAuth2AuthenticationSuccessHandler())
                         // (5-6) Register failure handler
@@ -123,12 +124,12 @@ public class SecurityConfig {
         http.userDetailsService(customUserDetailsService);
 
         // (7) Logout
-        http.logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
-                .logoutSuccessUrl("/").permitAll()
-                // .deleteCookies("JSESSIONID")
-                // .invalidateHttpSession(true)
-                .clearAuthentication(true)
-        );
+//        http.logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
+//                .logoutSuccessUrl("/").permitAll()
+//                .deleteCookies("JSESSIONID")
+//                .invalidateHttpSession(true)
+//                .clearAuthentication(true)
+//        );
 
         // (8) Exception Handling
         http.exceptionHandling(httpSecurityExceptionHandler -> httpSecurityExceptionHandler
@@ -142,7 +143,7 @@ public class SecurityConfig {
         // Can`t find a way to disable this
         http.formLogin(Customizer.withDefaults());
 
-        // (10) Add Filter
+        // (10) Add Filters
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         // (11) Http Basic / disabled
